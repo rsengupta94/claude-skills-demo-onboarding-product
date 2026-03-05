@@ -29,17 +29,16 @@ app.get('/health', (req, res) => {
   });
 });
 
-// API Routes (to be implemented)
-// TODO: Import and use route handlers
-// import analyzeRoutes from './routes/analyze.js';
-// import plansRoutes from './routes/plans.js';
-// import employeesRoutes from './routes/employees.js';
-// import dashboardRoutes from './routes/dashboard.js';
+// API Routes
+import analyzeRoutes from './routes/analyze.js';
+import plansRoutes from './routes/plans.js';
+import employeesRoutes from './routes/employees.js';
+import dashboardRoutes from './routes/dashboard.js';
 
-// app.use('/api/analyze-jd', analyzeRoutes);
-// app.use('/api/plans', plansRoutes);
-// app.use('/api/employees', employeesRoutes);
-// app.use('/api/dashboard', dashboardRoutes);
+app.use('/api', analyzeRoutes);
+app.use('/api', plansRoutes);
+app.use('/api', employeesRoutes);
+app.use('/api', dashboardRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {

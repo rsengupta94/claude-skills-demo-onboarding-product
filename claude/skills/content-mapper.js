@@ -241,7 +241,7 @@ If not relevant:
 }
 
 /**
- * Load course catalog from CSV
+ * Load course catalog from CSV and transform to internal format
  */
 async function loadCourseCatalog() {
   try {
@@ -251,12 +251,49 @@ async function loadCourseCatalog() {
       skip_empty_lines: true,
       trim: true
     });
-    return records;
+
+    // Transform CSV format to internal format
+    const transformed = records.map(row => {
+      // Build modules array from module columns
+      const modules = [];
+      for (let i = 1; i <= 4; i++) {
+        const moduleName = row[`module ${i} name`];
+        const moduleDesc = row[`module ${i} description`];
+
+        if (moduleName && moduleName.trim()) {
+          modules.push(`Module ${i}: ${moduleName}${moduleDesc ? ' - ' + moduleDesc : ''}`);
+        }
+      }
+
+      return {
+        course_id: generateCourseId(row['course name'] || ''),
+        title: row['course name'] || '',
+        provider: row['partner'] || 'Coursera',
+        skills: row['Skills'] || '',
+        coursera_url: row['coursera link'] || '',
+        description: row['course description'] || '',
+        learning_objectives: '', // Not in CSV, will use description
+        modules: modules.join('|')
+      };
+    });
+
+    return transformed;
   } catch (error) {
     console.warn('Course catalog not found or empty, returning empty catalog');
     console.warn('Error:', error.message);
     return [];
   }
+}
+
+/**
+ * Generate course ID from title
+ */
+function generateCourseId(title) {
+  return title
+    .toLowerCase()
+    .replace(/[^a-z0-9\\s]/g, '')
+    .replace(/\\s+/g, '-')
+    .substring(0, 50);
 }
 
 export default {
