@@ -1,0 +1,202 @@
+{
+  "technical": [
+    {
+      "group_id": "data-analytics",
+      "group_name": "Data & Analytics",
+      "covers": [
+        "data analysis",
+        "SQL",
+        "reporting",
+        "visualization",
+        "metrics",
+        "statistics",
+        "data modeling",
+        "business intelligence",
+        "dashboards",
+        "KPIs"
+      ],
+      "source": "initial"
+    },
+    {
+      "group_id": "marketing-growth",
+      "group_name": "Marketing & Growth",
+      "covers": [
+        "paid media",
+        "campaigns",
+        "SEO",
+        "digital strategy",
+        "demand generation",
+        "content marketing",
+        "social media",
+        "growth hacking",
+        "marketing analytics"
+      ],
+      "source": "initial"
+    },
+    {
+      "group_id": "technical-engineering",
+      "group_name": "Technical / Engineering",
+      "covers": [
+        "coding",
+        "Python",
+        "software development",
+        "technical implementation",
+        "programming",
+        "algorithms",
+        "system design",
+        "debugging",
+        "version control"
+      ],
+      "source": "initial"
+    },
+    {
+      "group_id": "design-content",
+      "group_name": "Design & Content",
+      "covers": [
+        "instructional design",
+        "curriculum development",
+        "content creation",
+        "UX",
+        "user experience",
+        "learning design",
+        "course development",
+        "pedagogy",
+        "multimedia production"
+      ],
+      "source": "initial"
+    },
+    {
+      "group_id": "ai-emerging-tech",
+      "group_name": "AI & Emerging Tech",
+      "covers": [
+        "AI fundamentals",
+        "machine learning",
+        "adaptive learning",
+        "AI implementation",
+        "generative AI",
+        "LLMs",
+        "AI strategy",
+        "emerging technologies",
+        "innovation"
+      ],
+      "source": "initial"
+    }
+  ],
+  "behavioral": [
+    {
+      "group_id": "communication",
+      "group_name": "Communication",
+      "covers": [
+        "written communication",
+        "verbal communication",
+        "presentation",
+        "presenting",
+        "explaining complex concepts",
+        "storytelling",
+        "executive presence",
+        "public speaking",
+        "articulation",
+        "persuasion"
+      ],
+      "source": "initial"
+    },
+    {
+      "group_id": "strategic-thinking",
+      "group_name": "Strategic Thinking",
+      "covers": [
+        "planning",
+        "vision",
+        "translating goals to action",
+        "business acumen",
+        "long-term thinking",
+        "strategic planning",
+        "priority setting",
+        "roadmapping",
+        "critical thinking"
+      ],
+      "source": "initial"
+    },
+    {
+      "group_id": "collaboration",
+      "group_name": "Collaboration",
+      "covers": [
+        "cross-functional work",
+        "teamwork",
+        "partnership",
+        "relationship building",
+        "working with others",
+        "team dynamics",
+        "cooperation",
+        "interpersonal skills",
+        "networking"
+      ],
+      "source": "initial"
+    },
+    {
+      "group_id": "stakeholder-management",
+      "group_name": "Stakeholder Management",
+      "covers": [
+        "managing up",
+        "influencing",
+        "building rapport",
+        "rapport across levels",
+        "rapport across cultures",
+        "executive communication",
+        "stakeholder alignment",
+        "relationship management",
+        "political savvy"
+      ],
+      "source": "initial"
+    },
+    {
+      "group_id": "problem-solving",
+      "group_name": "Problem Solving",
+      "covers": [
+        "analytical thinking",
+        "risk assessment",
+        "creative solutions",
+        "troubleshooting",
+        "decision making",
+        "root cause analysis",
+        "critical analysis",
+        "innovation",
+        "resourcefulness"
+      ],
+      "source": "initial"
+    },
+    {
+      "group_id": "project-management",
+      "group_name": "Project Management",
+      "covers": [
+        "planning",
+        "execution",
+        "timelines",
+        "program development",
+        "scaling",
+        "resource management",
+        "coordination",
+        "milestone tracking",
+        "agile",
+        "delivery"
+      ],
+      "source": "initial"
+    },
+    {
+      "group_id": "leadership",
+      "group_name": "Leadership",
+      "covers": [
+        "managing teams",
+        "mentoring",
+        "driving initiatives",
+        "accountability",
+        "coaching",
+        "people management",
+        "delegation",
+        "motivation",
+        "team building",
+        "change management"
+      ],
+      "source": "initial"
+    }
+  ]
+}
