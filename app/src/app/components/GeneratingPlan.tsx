@@ -1,7 +1,6 @@
 import { CheckCircle2, Circle, Loader2 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router';
-import { addEmployee } from '../data/employees';
 
 interface Step {
   id: number;
@@ -11,46 +10,42 @@ interface Step {
 
 interface GeneratingPlanProps {
   hireName: string;
+  employeeId: string;
 }
 
-export function GeneratingPlan({ hireName }: GeneratingPlanProps) {
+export function GeneratingPlan({ hireName, employeeId }: GeneratingPlanProps) {
   const [currentStep, setCurrentStep] = useState(0);
   const [showReady, setShowReady] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Simulate progress through steps
+    // Simulate progress through the 8 Claude Skills steps
+    // In production, this would poll /api/plans/:id/status or use SSE
     const interval = setInterval(() => {
       setCurrentStep((prev) => {
-        if (prev < 4) return prev + 1;
+        if (prev < 7) return prev + 1;
         return prev;
       });
-    }, 2000);
+    }, 1500); // ~12 seconds total for demo
 
     return () => clearInterval(interval);
   }, []);
 
   useEffect(() => {
     // When all steps are complete, show "Plan Ready!" and then navigate
-    if (currentStep >= 4) {
+    if (currentStep >= 7) {
       const timer = setTimeout(() => {
         setShowReady(true);
-        
-        // Add the new employee to the system
-        const newEmployee = addEmployee(hireName);
-        
-        console.log('New employee added:', newEmployee);
-        console.log('Navigating to:', `/employees/${newEmployee.id}/onboarding-plan`);
-        
-        // Navigate to their Onboarding Plan after a brief moment
+
+        // Navigate to the onboarding plan
         setTimeout(() => {
-          navigate(`/employees/${newEmployee.id}/onboarding-plan`, { replace: true });
+          navigate(`/employees/${employeeId}/onboarding-plan`, { replace: true });
         }, 1500);
-      }, 2000); // Wait for last step to show as completed
+      }, 1500);
 
       return () => clearTimeout(timer);
     }
-  }, [currentStep, hireName, navigate]);
+  }, [currentStep, employeeId, navigate]);
 
   const steps: Step[] = [
     {
@@ -75,8 +70,23 @@ export function GeneratingPlan({ hireName }: GeneratingPlanProps) {
     },
     {
       id: 4,
-      label: 'Creating onboarding plan',
+      label: 'Generating 30/60/90 plan',
       status: currentStep > 4 ? 'completed' : currentStep === 4 ? 'in-progress' : 'pending',
+    },
+    {
+      id: 5,
+      label: 'Creating manager toolkit',
+      status: currentStep > 5 ? 'completed' : currentStep === 5 ? 'in-progress' : 'pending',
+    },
+    {
+      id: 6,
+      label: 'Building progress framework',
+      status: currentStep > 6 ? 'completed' : currentStep === 6 ? 'in-progress' : 'pending',
+    },
+    {
+      id: 7,
+      label: 'Finalizing onboarding plan',
+      status: currentStep > 7 ? 'completed' : currentStep === 7 ? 'in-progress' : 'pending',
     },
   ];
 
@@ -89,7 +99,12 @@ export function GeneratingPlan({ hireName }: GeneratingPlanProps) {
         </div>
 
         {/* Title */}
-        <h2 className="text-3xl font-semibold text-gray-900 mb-12">Generating Plan...</h2>
+        <h2 className="text-3xl font-semibold text-gray-900 mb-4">
+          Generating Plan for {hireName}
+        </h2>
+        <p className="text-gray-500 mb-12">
+          Running 8 AI skills to create personalized onboarding
+        </p>
 
         {/* Progress Steps */}
         <div className="space-y-4 text-left max-w-md mx-auto">
@@ -101,7 +116,7 @@ export function GeneratingPlan({ hireName }: GeneratingPlanProps) {
               )}
               {step.status === 'in-progress' && (
                 <div className="w-6 h-6 flex-shrink-0 flex items-center justify-center">
-                  <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#0056D2' }} />
+                  <div className="w-3 h-3 rounded-full animate-pulse" style={{ backgroundColor: '#0056D2' }} />
                 </div>
               )}
               {step.status === 'pending' && (
