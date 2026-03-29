@@ -44,10 +44,10 @@ export function ManagerToolkit() {
               <h2 className="text-xl font-semibold text-gray-900 mb-2">Development Summary</h2>
               <p className="text-sm text-gray-600 mb-3">Key areas to focus on for this hire:</p>
               <ul className="space-y-2">
-                {toolkitData.focusAreas.map((area, i) => (
+                {toolkitData.focusAreas.map((area: any, i: number) => (
                   <li key={i} className="flex items-start gap-2 text-sm text-gray-700">
                     <span className="text-gray-400 mt-0.5">•</span>
-                    <span><strong>{area.area}</strong> — {area.context}</span>
+                    <span>{area.text ?? area.area ?? String(area)}</span>
                   </li>
                 ))}
               </ul>
@@ -68,9 +68,9 @@ export function ManagerToolkit() {
                       Day {checkIn.day} Check-in:
                     </p>
                     <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 space-y-2">
-                      {checkIn.prompts.map((prompt, j) => (
+                      {checkIn.prompts.map((prompt: any, j: number) => (
                         <p key={j} className="text-sm text-gray-700">
-                          "{prompt}"
+                          "{prompt.question ?? prompt}"
                         </p>
                       ))}
                     </div>
@@ -88,10 +88,10 @@ export function ManagerToolkit() {
             <div>
               <h2 className="text-xl font-semibold text-gray-900 mb-3">Support Tips</h2>
               <ul className="space-y-2">
-                {toolkitData.supportTips.map((tip, i) => (
+                {toolkitData.supportTips.map((tip: any, i: number) => (
                   <li key={i} className="flex items-start gap-2 text-sm text-gray-700">
                     <span className="text-gray-400 mt-0.5">•</span>
-                    <span>{tip}</span>
+                    <span>{tip.text ?? tip}</span>
                   </li>
                 ))}
               </ul>

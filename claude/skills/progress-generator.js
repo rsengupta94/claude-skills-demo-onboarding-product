@@ -42,7 +42,7 @@ export async function generateProgressFramework(learningPath, plan306090, gapAna
 
   return {
     overallReadiness: 0, // Always start at 0%
-    phases: result.phases.map(p => ({ ...p, status: 'upcoming' })),
+    phases: result.phases.map((p, i) => ({ ...p, status: i === 0 ? 'in_progress' : 'upcoming' })),
     learningChecklist: result.learningChecklist.map(item => ({ ...item, status: 'not-started' })),
     skillProgression: result.skillProgression.map(skill => ({
       ...skill,
@@ -183,7 +183,7 @@ export function generateProgressFrameworkSimple(learningPath, plan306090, gapAna
   return {
     overallReadiness: 0,
     phases: [
-      { day: 30, status: 'upcoming' },
+      { day: 30, status: 'in_progress' },
       { day: 60, status: 'upcoming' },
       { day: 90, status: 'upcoming' }
     ],

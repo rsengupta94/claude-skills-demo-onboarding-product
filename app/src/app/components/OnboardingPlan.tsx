@@ -235,10 +235,10 @@ export function OnboardingPlan() {
                 <div className="p-6 flex-1">
                   <h3 className="text-sm font-semibold text-gray-700 mb-3">Goals</h3>
                   <ul className="space-y-3">
-                    {phase.goals.map((goal, j) => (
+                    {phase.goals.map((goal: any, j: number) => (
                       <li key={j} className="flex items-start gap-2 text-sm text-gray-700">
                         <span className="text-gray-400 mt-0.5">•</span>
-                        <span>{goal}</span>
+                        <span>{goal.text ?? goal}</span>
                       </li>
                     ))}
                   </ul>
