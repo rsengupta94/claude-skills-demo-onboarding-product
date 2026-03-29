@@ -4,7 +4,7 @@
  */
 
 import OpenAI from 'openai';
-import { LLMProvider } from './provider.js';
+import { LLMProvider } from './base-provider.js';
 
 export class OpenAIProvider extends LLMProvider {
   constructor(config) {

@@ -1,22 +1,32 @@
 import { useParams } from 'react-router';
-import { getEmployeeById } from '../data/employees';
-import { getProgressTrackingData } from '../data/progressTrackingData';
+import { useState, useEffect } from 'react';
+import { api, type ProgressTracking as ProgressTrackingData } from '../services/api';
+import { PageSkeleton } from './LoadingSkeleton';
+import { ErrorMessage } from './ErrorMessage';
 
 export function ProgressTracking() {
   const { id } = useParams<{ id: string }>();
-  const employee = id ? getEmployeeById(id) : null;
+  const [progressData, setProgressData] = useState<ProgressTrackingData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  if (!employee) {
-    return (
-      <div className="p-8">
-        <p className="text-gray-500">Employee not found</p>
-      </div>
-    );
+  useEffect(() => {
+    if (!id) return;
+    setLoading(true);
+    setError(null);
+    api.getProgressTracking(id)
+      .then(setProgressData)
+      .catch((e) => setError(e.message || 'Failed to load progress tracking'))
+      .finally(() => setLoading(false));
+  }, [id]);
+
+  if (loading) {
+    return <div className="p-8"><PageSkeleton /></div>;
   }
 
-  // Fetch employee-specific progress tracking data
-  // In production, this would be an API call with loading states
-  const progressData = getProgressTrackingData(employee.id);
+  if (error || !progressData) {
+    return <div className="p-8"><ErrorMessage message={error || 'Employee not found'} /></div>;
+  }
 
   const getStatusColor = (status: 'completed' | 'in-progress' | 'not-started') => {
     switch (status) {
@@ -45,7 +55,7 @@ export function ProgressTracking() {
       {/* Header */}
       <div className="mb-8">
         <h1 className="text-3xl font-semibold text-gray-900 mb-1">Progress Tracking</h1>
-        <p className="text-gray-500">{employee.name}</p>
+        <p className="text-gray-500">{progressData.name}</p>
       </div>
 
       {/* Main Content - Stacked Sections */}
@@ -80,7 +90,7 @@ export function ProgressTracking() {
                     {phase.status === 'completed' && (
                       <span className="text-green-600 text-2xl font-bold">✓</span>
                     )}
-                    {phase.status === 'current' && (
+                    {phase.status === 'in_progress' && (
                       <div
                         className="w-4 h-4 rounded-full"
                         style={{ backgroundColor: '#0056D2' }}
@@ -141,25 +151,22 @@ export function ProgressTracking() {
               <div className="space-y-6">
                 {progressData.skillProgression.map((skill) => (
                   <div key={skill.id}>
-                    <p className="text-sm font-semibold text-gray-700 mb-3">{skill.skillName}</p>
+                    <p className="text-sm font-semibold text-gray-700 mb-3">{skill.competency}</p>
                     <div className="grid grid-cols-3 gap-4">
-                      {/* Before */}
                       <div>
                         <p className="text-xs text-gray-500 mb-2">Before</p>
                         <div className="flex items-center gap-2">
                           <div className="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden">
                             <div
                               className="h-full bg-gray-400 rounded-full"
-                              style={{ width: `${(skill.levels.before / 4) * 100}%` }}
+                              style={{ width: `${(skill.before / skill.target) * 100}%` }}
                             />
                           </div>
                           <span className="text-xs text-gray-600 min-w-[1.5rem]">
-                            {skill.levels.before}/4
+                            {skill.before}/{skill.target}
                           </span>
                         </div>
                       </div>
-
-                      {/* Current */}
                       <div>
                         <p className="text-xs text-gray-500 mb-2">Current</p>
                         <div className="flex items-center gap-2">
@@ -167,29 +174,27 @@ export function ProgressTracking() {
                             <div
                               className="h-full rounded-full"
                               style={{
-                                width: `${(skill.levels.current / 4) * 100}%`,
+                                width: `${(skill.current / skill.target) * 100}%`,
                                 backgroundColor: '#0056D2',
                               }}
                             />
                           </div>
                           <span className="text-xs font-semibold text-gray-700 min-w-[1.5rem]">
-                            {skill.levels.current}/4
+                            {skill.current}/{skill.target}
                           </span>
                         </div>
                       </div>
-
-                      {/* Target */}
                       <div>
                         <p className="text-xs text-gray-500 mb-2">Target</p>
                         <div className="flex items-center gap-2">
                           <div className="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden">
                             <div
                               className="h-full bg-green-500 rounded-full"
-                              style={{ width: `${(skill.levels.target / 4) * 100}%` }}
+                              style={{ width: '100%' }}
                             />
                           </div>
                           <span className="text-xs text-gray-600 min-w-[1.5rem]">
-                            {skill.levels.target}/4
+                            {skill.target}/{skill.target}
                           </span>
                         </div>
                       </div>

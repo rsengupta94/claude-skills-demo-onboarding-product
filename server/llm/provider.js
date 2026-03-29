@@ -3,52 +3,11 @@
  * Unified interface for OpenAI and Gemini
  */
 
+import { LLMProvider } from './base-provider.js';
 import { OpenAIProvider } from './openai-provider.js';
 import { GeminiProvider } from './gemini-provider.js';
 
-/**
- * Base LLM Provider interface
- */
-export class LLMProvider {
-  constructor(config = {}) {
-    this.config = config;
-    this.model = config.model;
-  }
-
-  /**
-   * Generate structured JSON response matching a schema
-   * @param {string} prompt - The prompt to send to the LLM
-   * @param {object} schema - JSON schema for structured output
-   * @returns {Promise<object>} Parsed JSON response
-   */
-  async generateStructured(prompt, schema) {
-    throw new Error('generateStructured must be implemented by subclass');
-  }
-
-  /**
-   * Generate text response
-   * @param {string} prompt - The prompt to send to the LLM
-   * @returns {Promise<string>} Text response
-   */
-  async generate(prompt) {
-    throw new Error('generate must be implemented by subclass');
-  }
-
-  /**
-   * Set the model to use
-   * @param {string} modelName - Model identifier
-   */
-  setModel(modelName) {
-    this.model = modelName;
-  }
-
-  /**
-   * Get current provider name
-   */
-  getProviderName() {
-    throw new Error('getProviderName must be implemented by subclass');
-  }
-}
+export { LLMProvider };
 
 /**
  * Factory function to get LLM provider based on configuration

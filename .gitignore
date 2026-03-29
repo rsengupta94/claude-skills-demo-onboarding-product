@@ -1,0 +1,32 @@
+# Environment variables - NEVER commit these
+.env
+.env.local
+.env.*.local
+
+# Dependencies
+node_modules/
+app/node_modules/
+
+# Generated hire data (contains personal info)
+hires/
+
+# Build output
+app/dist/
+dist/
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS files
+.DS_Store
+
+# IDE
+.vscode/
+.idea/
+
+# Lock files (optional - keeping package-lock for reproducibility)
+# package-lock.json
+
+# Claude memory
+.claude/

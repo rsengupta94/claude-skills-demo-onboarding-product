@@ -1,16 +1,34 @@
 import { Plus, ChevronRight, ChevronDown } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router';
-import { employees } from '../data/employees';
+import { api } from '../services/api';
+
+interface SidebarEmployee {
+  id: string;
+  name: string;
+}
 
 export function Sidebar() {
   const navigate = useNavigate();
   const location = useLocation();
   const isCreatePage = location.pathname === '/create-plan';
 
-  const [expandedItems, setExpandedItems] = useState<Set<string>>(
-    new Set(['priya-sharma'])
-  );
+  const [employees, setEmployees] = useState<SidebarEmployee[]>([]);
+  const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set());
+
+  useEffect(() => {
+    api.getEmployees().then((data) => {
+      const mapped = data.map((e) => ({ id: e.employeeId, name: e.name }));
+      setEmployees(mapped);
+      // Auto-expand the employee matching current route
+      const match = location.pathname.match(/\/employees\/([^/]+)/);
+      if (match) {
+        setExpandedItems(new Set([match[1]]));
+      } else if (mapped.length > 0) {
+        setExpandedItems(new Set([mapped[0].id]));
+      }
+    }).catch(() => {});
+  }, [location.pathname]);
 
   const toggleItem = (id: string) => {
     const newExpanded = new Set(expandedItems);

@@ -4,7 +4,7 @@
  */
 
 import { GoogleGenerativeAI } from '@google/generative-ai';
-import { LLMProvider } from './provider.js';
+import { LLMProvider } from './base-provider.js';
 
 export class GeminiProvider extends LLMProvider {
   constructor(config) {
@@ -35,8 +35,7 @@ Schema: ${JSON.stringify(schema, null, 2)}`;
         const model = this.genAI.getGenerativeModel({
           model: this.model,
           generationConfig: {
-            temperature: this.temperature,
-            responseMimeType: 'application/json'
+            temperature: this.temperature
           }
         });
 

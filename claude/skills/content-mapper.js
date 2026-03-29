@@ -41,39 +41,40 @@ export async function mapContent(gapAnalysis, options = {}) {
   // Get LLM provider
   const llm = getLLMProvider(options.llmConfig);
 
+  // Process all gaps in parallel
+  const results = await Promise.all(
+    gapAnalysis.gaps.map(async (gap) => {
+      console.log(`🔍 Finding content for: ${gap.competency} (${gap.severity} severity)`);
+      try {
+        const match = await findBestCourseForGap(gap, courseCatalog, llm);
+        return { gap, match };
+      } catch (error) {
+        console.error(`Error mapping ${gap.competency}:`, error.message);
+        return { gap, match: null, error: error.message };
+      }
+    })
+  );
+
   const learningPath = [];
   const unmatchedGaps = [];
 
-  // Process each gap
-  for (const gap of gapAnalysis.gaps) {
-    console.log(`🔍 Finding content for: ${gap.competency} (${gap.severity} severity)`);
-
-    try {
-      const match = await findBestCourseForGap(gap, courseCatalog, llm);
-
-      if (match) {
-        learningPath.push({
-          sequence: learningPath.length + 1,
-          courseId: match.course_id,
-          courseTitle: match.title,
-          courseUrl: match.coursera_url,
-          addresses: gap.competency,
-          duration: match.duration_hours ? `${match.duration_hours} hours` : 'N/A',
-          rationale: match.rationale,
-          relevanceScore: match.relevanceScore,
-          recommendedModules: match.recommendedModules || []
-        });
-      } else {
-        unmatchedGaps.push({
-          competency: gap.competency,
-          reason: 'No course content addresses this skill gap'
-        });
-      }
-    } catch (error) {
-      console.error(`Error mapping ${gap.competency}:`, error.message);
+  for (const { gap, match, error } of results) {
+    if (match) {
+      learningPath.push({
+        sequence: learningPath.length + 1,
+        courseId: match.course_id,
+        courseTitle: match.title,
+        courseUrl: match.coursera_url,
+        addresses: gap.competency,
+        duration: match.duration_hours ? `${match.duration_hours} hours` : 'N/A',
+        rationale: match.rationale,
+        relevanceScore: match.relevanceScore,
+        recommendedModules: match.recommendedModules || []
+      });
+    } else {
       unmatchedGaps.push({
         competency: gap.competency,
-        reason: `Error: ${error.message}`
+        reason: error ? `Error: ${error}` : 'No course content addresses this skill gap'
       });
     }
   }
@@ -121,13 +122,18 @@ async function findBestCourseForGap(gap, courseCatalog, llm) {
 
   const coursesToAnalyze = potentialCourses.length > 0 ? potentialCourses : courseCatalog;
 
+  // Analyze all courses in parallel
+  const analyses = await Promise.all(
+    coursesToAnalyze.map(async (course) => {
+      const analysis = await analyzeCourseRelevance(gap, course, llm);
+      return { course, analysis };
+    })
+  );
+
   let bestMatch = null;
   let highestScore = 0;
 
-  for (const course of coursesToAnalyze) {
-    // Analyze course relevance using description and learning objectives
-    const analysis = await analyzeCourseRelevance(gap, course, llm);
-
+  for (const { course, analysis } of analyses) {
     if (analysis.isRelevant && analysis.relevanceScore > highestScore) {
       highestScore = analysis.relevanceScore;
       bestMatch = {
