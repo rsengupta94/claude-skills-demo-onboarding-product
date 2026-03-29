@@ -40,13 +40,14 @@ export async function generateOnboardingPlan(input, options = {}) {
     pipeline.currentStep = 1;
     emitProgress(pipeline, 'analyzing-jd', options.progressCallback);
 
+    const step1Start = Date.now();
     const jdAnalysis = await analyzeJobDescription(
       input.jobDescription,
       options.llmConfig
     );
 
     pipeline.results.jdAnalysis = jdAnalysis;
-    console.log(`✅ Extracted ${jdAnalysis.requiredCompetencies.length} competencies`);
+    console.log(`✅ Extracted ${jdAnalysis.requiredCompetencies.length} competencies [${((Date.now() - step1Start) / 1000).toFixed(2)}s]`);
     if (jdAnalysis.newBuckets.length > 0) {
       console.log(`✨ Created ${jdAnalysis.newBuckets.length} new skill bucket(s)`);
     }
@@ -64,6 +65,7 @@ export async function generateOnboardingPlan(input, options = {}) {
     let candidateAssessment = null;
 
     // Process interview notes if provided
+    const step2Start = Date.now();
     if (input.assessment.interviewNotes) {
       console.log('📝 Processing interview notes...');
       const interviewAssessment = await assessFromInterview(
@@ -95,7 +97,7 @@ export async function generateOnboardingPlan(input, options = {}) {
     }
 
     pipeline.results.candidateAssessment = candidateAssessment;
-    console.log(`✅ Assessment complete: ${candidateAssessment.competencyScores.length} competencies assessed`);
+    console.log(`✅ Assessment complete: ${candidateAssessment.competencyScores.length} competencies assessed [${((Date.now() - step2Start) / 1000).toFixed(2)}s]`);
 
     // ============================================
     // STEP 3: Identify Gaps
@@ -107,6 +109,7 @@ export async function generateOnboardingPlan(input, options = {}) {
     pipeline.currentStep = 3;
     emitProgress(pipeline, 'identifying-gaps', options.progressCallback);
 
+    const step3Start = Date.now();
     const gapAnalysis = await identifyGaps(
       jdAnalysis,
       candidateAssessment,
@@ -114,7 +117,7 @@ export async function generateOnboardingPlan(input, options = {}) {
     );
 
     pipeline.results.gapAnalysis = gapAnalysis;
-    console.log(`✅ Identified ${gapAnalysis.gaps.length} skill gaps`);
+    console.log(`✅ Identified ${gapAnalysis.gaps.length} skill gaps [${((Date.now() - step3Start) / 1000).toFixed(2)}s]`);
     gapAnalysis.gaps.slice(0, 3).forEach(g => {
       console.log(`   • ${g.competency}: ${g.severity} severity`);
     });
@@ -129,13 +132,14 @@ export async function generateOnboardingPlan(input, options = {}) {
     pipeline.currentStep = 4;
     emitProgress(pipeline, 'mapping-content', options.progressCallback);
 
+    const step4Start = Date.now();
     const learningPath = await mapContent(
       gapAnalysis,
       options.llmConfig
     );
 
     pipeline.results.learningPath = learningPath;
-    console.log(`✅ Learning path created: ${learningPath.learningPath.length} courses`);
+    console.log(`✅ Learning path created: ${learningPath.learningPath.length} courses [${((Date.now() - step4Start) / 1000).toFixed(2)}s]`);
     if (learningPath.unmatchedGaps.length > 0) {
       console.log(`⚠️  ${learningPath.unmatchedGaps.length} gaps without course matches`);
     }
@@ -151,6 +155,7 @@ export async function generateOnboardingPlan(input, options = {}) {
     emitProgress(pipeline, 'generating-deliverables', options.progressCallback);
 
     // Run these in parallel for efficiency
+    const step57Start = Date.now();
     const [plan306090, managerToolkit, progressFramework] = await Promise.all([
       generatePlan(gapAnalysis, learningPath, options.llmConfig),
       generateToolkit(gapAnalysis, candidateAssessment, options.llmConfig),
@@ -161,9 +166,10 @@ export async function generateOnboardingPlan(input, options = {}) {
     pipeline.results.managerToolkit = managerToolkit;
     pipeline.results.progressFramework = progressFramework;
 
-    console.log('✅ 30/60/90 Plan generated');
-    console.log('✅ Manager Toolkit generated');
-    console.log('✅ Progress Framework generated');
+    console.log(`✅ 30/60/90 Plan generated`);
+    console.log(`✅ Manager Toolkit generated`);
+    console.log(`✅ Progress Framework generated`);
+    console.log(`⏱️  Steps 5-7 (parallel): ${((Date.now() - step57Start) / 1000).toFixed(2)}s`);
 
     // ============================================
     // STEP 8: Finalize and Package

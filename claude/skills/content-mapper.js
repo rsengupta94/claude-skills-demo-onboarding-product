@@ -38,10 +38,10 @@ export async function mapContent(gapAnalysis, options = {}) {
     };
   }
 
-  // Get LLM provider
-  const llm = getLLMProvider(options.llmConfig);
+  // Use Flash for content mapping — course matching doesn't need deep reasoning
+  const llm = getLLMProvider({ ...options.llmConfig, model: 'gemini-2.5-flash' });
 
-  console.log(`🔍 Batch matching ${gapAnalysis.gaps.length} gaps against ${courseCatalog.length} courses in a single LLM call...`);
+  console.log(`🔍 Batch matching ${gapAnalysis.gaps.length} gaps against ${courseCatalog.length} courses in a single LLM call (gemini-2.5-flash)...`);
 
   // Single batch LLM call — all gaps × all courses at once
   const batchResults = await batchMatchGapsToCourses(gapAnalysis.gaps, courseCatalog, llm);

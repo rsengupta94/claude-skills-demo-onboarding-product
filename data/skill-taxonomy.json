@@ -80,6 +80,20 @@
         "innovation"
       ],
       "source": "initial"
+    },
+    {
+      "group_id": "product-management",
+      "group_name": "Product Management",
+      "covers": [
+        "product strategy",
+        "roadmapping",
+        "user research",
+        "product intuition",
+        "monetization",
+        "pricing & packaging",
+        "feature definition"
+      ],
+      "source": "dynamic"
     }
   ],
   "behavioral": [

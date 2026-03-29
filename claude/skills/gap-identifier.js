@@ -72,9 +72,9 @@ ${assessmentTable}
    - Gap Size: Target - Current
 
 2. **Calculate Severity:**
-   - **High**: Gap of 2+ levels OR high importance with any gap
-   - **Moderate**: Gap of 1 level with moderate/high importance
-   - **Low**: Gap < 1 level OR low importance
+   - **High**: Gap of 2+ levels (target - current >= 2)
+   - **Moderate**: Gap of exactly 1 level (target - current = 1)
+   - **Low**: Gap < 1 level
 
 3. **Prioritize Gaps:**
    - Priority 1: High severity, high importance
@@ -140,14 +140,10 @@ function getTargetLevel(importance) {
 /**
  * Calculate severity from gap size and importance
  */
-function calculateSeverity(gapSize, importance) {
-  if (gapSize >= 2 || (importance === 'high' && gapSize >= 1)) {
-    return 'high';
-  } else if (gapSize >= 1 && ['moderate', 'high'].includes(importance.toLowerCase())) {
-    return 'moderate';
-  } else {
-    return 'low';
-  }
+function calculateSeverity(gapSize) {
+  if (gapSize >= 2) return 'high';
+  if (gapSize >= 1) return 'moderate';
+  return 'low';
 }
 
 /**
@@ -182,7 +178,7 @@ export function calculateGapsSimple(roleRequirements, candidateAssessment) {
     const gapSize = targetLevel - currentLevel;
 
     if (gapSize > 0) {
-      const severity = calculateSeverity(gapSize, required.importance);
+      const severity = calculateSeverity(gapSize);
       const priority = severity === 'high' ? 1 : severity === 'moderate' ? 2 : 3;
 
       gaps.push({

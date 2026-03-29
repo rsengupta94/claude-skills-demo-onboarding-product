@@ -31,47 +31,42 @@ export function OnboardingPlan() {
     return <div className="p-8"><ErrorMessage message={error || 'Employee not found'} /></div>;
   }
 
-  const getSeverityColor = (severity: 'low' | 'moderate' | 'high') => {
-    switch (severity) {
-      case 'low':
-        return '#10b981'; // green
-      case 'moderate':
-        return '#f59e0b'; // amber/orange
-      case 'high':
-        return '#ef4444'; // red
+  const normalizeSeverity = (severity: string): 'low' | 'moderate' | 'high' => {
+    const s = (severity || '').toLowerCase();
+    if (s === 'high' || s === 'critical') return 'high';
+    if (s === 'moderate' || s === 'medium') return 'moderate';
+    return 'low';
+  };
+
+  const getSeverityColor = (severity: string) => {
+    switch (normalizeSeverity(severity)) {
+      case 'low': return '#10b981';
+      case 'moderate': return '#f59e0b';
+      case 'high': return '#ef4444';
     }
   };
 
-  const getSeverityBgColor = (severity: 'low' | 'moderate' | 'high') => {
-    switch (severity) {
-      case 'low':
-        return '#d1fae5';
-      case 'moderate':
-        return '#fef3c7';
-      case 'high':
-        return '#fee2e2';
+  const getSeverityBgColor = (severity: string) => {
+    switch (normalizeSeverity(severity)) {
+      case 'low': return '#d1fae5';
+      case 'moderate': return '#fef3c7';
+      case 'high': return '#fee2e2';
     }
   };
 
-  const getSeverityTextColor = (severity: 'low' | 'moderate' | 'high') => {
-    switch (severity) {
-      case 'low':
-        return '#065f46';
-      case 'moderate':
-        return '#92400e';
-      case 'high':
-        return '#991b1b';
+  const getSeverityTextColor = (severity: string) => {
+    switch (normalizeSeverity(severity)) {
+      case 'low': return '#065f46';
+      case 'moderate': return '#92400e';
+      case 'high': return '#991b1b';
     }
   };
 
-  const getSeverityLabel = (severity: 'low' | 'moderate' | 'high') => {
-    switch (severity) {
-      case 'low':
-        return 'Low Gap';
-      case 'moderate':
-        return 'Moderate Gap';
-      case 'high':
-        return 'High Gap';
+  const getSeverityLabel = (severity: string) => {
+    switch (normalizeSeverity(severity)) {
+      case 'low': return 'Low Gap';
+      case 'moderate': return 'Moderate Gap';
+      case 'high': return 'High Gap';
     }
   };
 
@@ -162,7 +157,7 @@ export function OnboardingPlan() {
                       <div
                         className="h-full transition-all duration-300"
                         style={{
-                          width: `${(gap.currentLevel / gap.targetLevel) * 100}%`,
+                          width: `${(Number(gap.currentLevel) / Number(gap.targetLevel)) * 100}%`,
                           backgroundColor: getSeverityColor(gap.severity),
                         }}
                       />
