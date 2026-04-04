@@ -4,6 +4,69 @@ AI-powered onboarding assistant that transforms hiring data (job descriptions + 
 
 ---
 
+## Skills Architecture
+
+The core of this platform is the **Claude Skills** pattern — 8 specialized, composable AI skills orchestrated in a pipeline. Each skill has a single responsibility and a well-defined JSON input/output contract.
+
+```
+JD + Assessment Input
+       │
+       ▼
+┌─────────────────────────────────────────────────────────────┐
+│                     Orchestration Pipeline                  │
+│                   (server/orchestrator/pipeline.js)         │
+│                                                             │
+│  Step 1: jd-analyzer        Extract competencies from JD   │
+│            │                                                │
+│  Step 2: interview-assessor  Parse interview notes OR       │
+│          rating-processor    convert 1–5 ratings            │
+│            │                                                │
+│  Step 3: gap-identifier     Compare role requirements vs    │
+│            │                candidate assessment            │
+│            │                                                │
+│  Step 4: content-mapper     Match gaps → Coursera courses   │
+│            │                (parallelized: all gaps at once)│
+│            │                                                │
+│  ┌─────────┼──────────┐                                     │
+│  ▼         ▼          ▼   (Steps 5–7 run in parallel)       │
+│  plan-   toolkit-  progress-                                │
+│  generator generator generator                              │
+└─────────────────────────────────────────────────────────────┘
+       │
+       ▼
+5 Personalized Onboarding Deliverables
+```
+
+### The 8 Skills
+
+| Skill | File | Responsibility |
+|---|---|---|
+| **jd-analyzer** | `claude/skills/jd-analyzer.js` | Extract competencies from a job description; dynamically creates new skill buckets when the JD contains capabilities not in the taxonomy |
+| **interview-assessor** | `claude/skills/interview-assessor.js` | Parse unstructured interview notes into a standardized per-competency assessment |
+| **rating-processor** | `claude/skills/rating-processor.js` | Convert manual 1–5 competency ratings into the same standardized assessment format |
+| **gap-identifier** | `claude/skills/gap-identifier.js` | Compare role requirements against the candidate assessment to produce scored skill gaps with evidence |
+| **content-mapper** | `claude/skills/content-mapper.js` | Match each skill gap to relevant Coursera courses from the catalog using semantic descriptions; recommends specific modules |
+| **plan-generator** | `claude/skills/plan-generator.js` | Generate a structured 30/60/90 day onboarding plan with goals and milestones per phase |
+| **toolkit-generator** | `claude/skills/toolkit-generator.js` | Produce manager support materials: focus areas, check-in conversation prompts by day, and coaching tips |
+| **progress-generator** | `claude/skills/progress-generator.js` | Initialize a progress tracking framework with phases, a learning checklist, and skill progression baselines |
+
+### LLM Abstraction Layer
+
+Skills are provider-agnostic. The `server/llm/` layer wraps Gemini and OpenAI behind a common interface:
+
+```
+getLLMProvider(config)     ← server/llm/provider.js (factory)
+       │
+       ├── GeminiProvider  ← server/llm/gemini-provider.js
+       └── OpenAIProvider  ← server/llm/openai-provider.js
+              │
+       LLMProvider (base)  ← server/llm/base-provider.js
+```
+
+Switch providers by changing `LLM_PROVIDER` in `.env` — no code changes required.
+
+---
+
 ## Prerequisites
 
 - **Node.js v20+** (project developed on v24.14.1 — check with `node --version`)
